@@ -1,0 +1,151 @@
+# Telegram Job Parser Mini App
+
+Рабочее мини-приложение для Telegram для поиска вакансий.
+
+## 🚀 Быстрый старт на Railway
+
+### 1. Подготовка бота
+
+1. Откройте [@BotFather](https://t.me/BotFather) в Telegram
+2. Создайте нового бота командой `/newbot`
+3. Получите токен бота (BOT_TOKEN)
+4. **Важно:** Настройте Menu Button для Mini App:
+   ```
+   /setmenubutton
+   Выберите вашего бота
+   Введите текст кнопки: Открыть поиск
+   Введите URL: https://your-app.up.railway.app/index.html
+   ```
+
+### 2. Получение Chat ID
+
+1. Откройте [@userinfobot](https://t.me/userinfobot) в Telegram
+2. Нажмите `/start`
+3. Скопируйте ваш ID (это MANAGER_CHAT_ID)
+
+### 3. Деплой на Railway
+
+1. Форкните этот репозиторий
+2. Зайдите на [Railway.app](https://railway.app)
+3. Нажмите "New Project" → "Deploy from GitHub repo"
+4. Выберите ваш форк репозитория
+5. Добавьте переменные окружения:
+   - `BOT_TOKEN` - токен от @BotFather
+   - `MANAGER_CHAT_ID` - ваш Chat ID
+   - `SHARED_SECRET` - любой секретный ключ (например: `my-secret-key-123`)
+   - `WEB_APP_URL` - URL вашего приложения на Railway (будет доступен после деплоя)
+
+### 4. Обновление URL
+
+После первого деплоя:
+1. Скопируйте URL вашего приложения (например: `https://your-app-name.up.railway.app`)
+2. Обновите переменную `WEB_APP_URL` в Railway
+3. Обновите URL в Menu Button у @BotFather (шаг 1.4)
+
+## 📁 Структура проекта
+
+```
+telegram-job-parser/
+├── mini_app_bot.py          # Основной файл с Flask сервером и Telegram ботом
+├── static/
+│   └── index.html           # Frontend мини-приложения
+├── requirements.txt         # Python зависимости
+├── Procfile                 # Конфигурация для Railway
+├── railway.json            # Дополнительные настройки Railway
+└── .env.sample             # Пример переменных окружения
+```
+
+## 🔧 Локальная разработка
+
+```bash
+# Клонирование репозитория
+git clone https://github.com/sergeygrin4/telegram-job-parser.git
+cd telegram-job-parser
+
+# Создание виртуального окружения
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Установка зависимостей
+pip install -r requirements.txt
+
+# Настройка переменных окружения
+cp .env.sample .env
+# Отредактируйте .env файл
+
+# Запуск
+python mini_app_bot.py
+```
+
+## 📱 Использование
+
+1. Откройте бота в Telegram
+2. Нажмите `/start`
+3. Нажмите кнопку "🔍 Открыть поиск вакансий"
+4. Используйте мини-приложение для поиска вакансий
+
+## 🔍 API Endpoints
+
+### POST /post
+Прием вакансий от парсера
+
+**Headers:**
+- `X-SECRET`: Секретный ключ из SHARED_SECRET
+- `Content-Type`: application/json
+
+**Body:**
+```json
+{
+  "chat_title": "Название канала",
+  "text": "Текст вакансии",
+  "link": "https://t.me/channel/123"
+}
+```
+
+**Пример curl:**
+```bash
+curl -X POST https://your-app.up.railway.app/post \
+  -H "Content-Type: application/json" \
+  -H "X-SECRET: your_secret_key" \
+  -d '{"chat_title":"IT Jobs","text":"Python dev, remote","link":"https://t.me/example/1"}'
+```
+
+### GET /health
+Health check endpoint
+
+## ❗ Важные моменты
+
+1. **HTTPS обязателен** - Telegram Mini Apps работают только через HTTPS. Railway предоставляет это автоматически.
+
+2. **Домен должен быть доступен** - URL в Menu Button должен точно совпадать с URL вашего приложения.
+
+3. **Первый запуск** - После деплоя может потребоваться 1-2 минуты для запуска приложения.
+
+4. **Логи** - Проверяйте логи в Railway Dashboard если что-то не работает.
+
+## 🐛 Устранение проблем
+
+### Мини-ап не открывается
+- Проверьте, что `WEB_APP_URL` установлен правильно
+- Убедитесь, что URL в Menu Button совпадает с `WEB_APP_URL/index.html`
+- Проверьте, что приложение запущено (статус в Railway)
+
+### Бот не отвечает на /start
+- Проверьте `BOT_TOKEN` в переменных окружения
+- Посмотрите логи в Railway
+- Убедитесь, что бот не заблокирован
+
+### Сообщения не приходят менеджеру
+- Проверьте правильность `MANAGER_CHAT_ID`
+- Убедитесь, что бот может отправлять сообщения (напишите боту `/start`)
+
+## 📞 Поддержка
+
+Если возникли проблемы:
+1. Проверьте логи в Railway Dashboard
+2. Убедитесь, что все переменные окружения установлены
+3. Проверьте, что статус приложения "Active" в Railway
+
+## 📝 Лицензия
+
+MIT
